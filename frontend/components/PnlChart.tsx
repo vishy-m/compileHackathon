@@ -18,6 +18,7 @@ export default function PnlChart({ data }: { data: StreamEvent[] }) {
           <ReferenceLine y={0} stroke="rgba(255,255,255,0.3)" />
           <Line type="monotone" dataKey="pnl" name="PnL" stroke="#90f0c5" strokeWidth={2} dot={false} />
           <Line type="monotone" dataKey="inventory_mwh" name="Inventory" stroke="#5dd6ff" strokeWidth={2} dot={false} />
+          <Line type="monotone" dataKey="target_physical_mwh" name="Target Physical" stroke="#ffcf5d" strokeWidth={2} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>

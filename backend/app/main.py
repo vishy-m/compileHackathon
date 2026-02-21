@@ -5,7 +5,7 @@ from pathlib import Path
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
-from .simulation import Dataset, SimulationSession
+from .simulation import Dataset, LiveSession, SimulationSession, run_backtest
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 
@@ -57,13 +57,24 @@ async def preview() -> dict:
 async def stream(ws: WebSocket) -> None:
     await ws.accept()
     dataset: Dataset = app.state.dataset
-    session = SimulationSession(dataset)
+    mode = ws.query_params.get("mode", "sim")
+
+    if mode == "live":
+        session = LiveSession(dataset)
+    else:
+        session = SimulationSession(dataset)
 
     try:
         async for event in session.stream():
             await ws.send_json(event)
     except WebSocketDisconnect:
         return
+
+
+@app.get("/api/retro")
+async def retro() -> dict:
+    dataset: Dataset = app.state.dataset
+    return run_backtest(dataset)
 
 
 if __name__ == "__main__":
